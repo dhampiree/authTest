@@ -10,6 +10,11 @@
 
 @interface ViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UITextField *mobileNumberTextField;
+@property (weak, nonatomic) IBOutlet UITextField *codeTextField;
+
+- (IBAction)actionAuth:(UIButton *)sender;
+
 
 @end
 

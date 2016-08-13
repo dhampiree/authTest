@@ -8,6 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface DSAuthHandler : NSObject
+
+
+@interface DSAuthHandler : NSObject <NSURLSessionDelegate>
+
+-(void) loginWithPhoneNumber:(NSString*) phoneNumber andNotificationID:(NSString*) notificationID;
+-(void) confirmPhoneNumber:(NSString*) phoneNumber withVerticationCode:(NSString*) verticationCode;
+-(void) confirmPhoneNumber:(NSString*) phoneNumber;
 
 @end

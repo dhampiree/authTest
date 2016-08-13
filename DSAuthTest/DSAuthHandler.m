@@ -35,18 +35,16 @@ NSString const *APILogin = @"/api/auth/login";
 
     NSString* method = @"/api/auth/login";
     NSDictionary* parameters = @{@"mobile_number":phoneNumber, @"notification_id" : notificationID};
-    [self authRequsetWithMethod:method andParameters:parameters];
-    //[self authAFNWithMethod:method andParameters:parameters];
-}
+    [self authAFNRequsetWithMethod:method andParameters:parameters];
+ }
 
 
 -(void) confirmPhoneNumber:(NSString*) phoneNumber withVerticationCode:(NSString*) verticationCode{
     NSLog(@"%@",NSStringFromSelector(_cmd));
     NSString* method = @"/api/auth/confirm_vertication_code";
     NSDictionary* parameters = @{@"mobile_number":phoneNumber, @"vertication_code" : verticationCode};
-    [self authRequsetWithMethod:method andParameters:parameters];
-    //[self authAFNWithMethod:method andParameters:parameters];
-}
+    [self authAFNRequsetWithMethod:method andParameters:parameters];
+ }
 
 
 -(void) confirmPhoneNumber:(NSString*) phoneNumber{
@@ -54,9 +52,8 @@ NSString const *APILogin = @"/api/auth/login";
     
     NSString* method = @"/api/auth/confirm_phone_number";
     NSDictionary* parameters = @{@"mobile_number":phoneNumber};
-    [self authRequsetWithMethod:method andParameters:parameters];
-    //[self authAFNWithMethod:method andParameters:parameters];
-}
+    [self authAFNRequsetWithMethod:method andParameters:parameters];
+ }
 
 
 -(void) authRequsetWithMethod:(NSString*) method andParameters:(NSDictionary*) parameters{
@@ -93,27 +90,22 @@ NSString const *APILogin = @"/api/auth/login";
 
 
 
--(void) authAFNWithMethod:(NSString*)method andParameters:(NSDictionary*)parameters {
+-(void) authAFNRequsetWithMethod:(NSString*)method andParameters:(NSDictionary*)parameters {
     NSURL* requestURL = [self.URLServer URLByAppendingPathComponent:method];
 
-    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    [manager setResponseSerializer:[AFHTTPResponseSerializer serializer]];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
     
-    [manager POST:requestURL.absoluteString
-       parameters:parameters
-         progress:nil
-          success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-              
-              NSError *jsonError;
-              NSMutableDictionary* innerJson = [NSJSONSerialization JSONObjectWithData:responseObject options:kNilOptions error:&jsonError];
-              NSLog(@"DATA: %@ \n\n", innerJson);
-              
-          }
-          failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-              
-              NSLog(@"ERROR: %@", [error localizedDescription]);
-              
-          }];
+    NSURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:requestURL.absoluteString parameters:parameters error:nil];
+    
+    NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:req completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"Error: %@", error);
+        } else {
+            NSLog(@"%@ %@", response, responseObject);
+        }
+    }];
+    [dataTask resume];
 }
 
 
